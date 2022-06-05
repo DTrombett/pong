@@ -1,0 +1,30 @@
+{
+	"name": "pong",
+	"version": "1.0.0",
+	"description": "Pong!",
+	"exports": "./dist/index.js",
+	"main": "./dist/index.js",
+	"scripts": {
+		"build": "tsup",
+		"lint": "eslint src --fix",
+		"prettier": "prettier --write src/**/*.ts",
+		"start": "npm run build && node --trace-warnings --enable-source-maps --experimental-specifier-resolution=node .",
+		"test": "eslint src && tsc --noEmit"
+	},
+	"type": "module",
+	"engines": {
+		"node": ">=18.x"
+	},
+	"author": "DTrombett",
+	"devDependencies": {
+		"@tsconfig/node18": "^1.0.0",
+		"@types/node": "^17.0.40",
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
+		"eslint": "^8.17.0",
+		"eslint-plugin-node": "^11.1.0",
+		"prettier": "^2.6.2",
+		"tsup": "^6.0.1",
+		"typescript": "^4.7.3"
+	}
+}
