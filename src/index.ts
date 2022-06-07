@@ -11,6 +11,7 @@ const columns = 92 as const;
 const racketHeight = 4 as const;
 const rows = 50 as const;
 const speed = 50 as const;
+const scores: Coordinates = [0, 0];
 const queue = new Queue();
 const ball: Coordinates = [Math.round(columns / 2), 1];
 const direction: Coordinates = [1, 1];
@@ -48,8 +49,10 @@ setTimeout(
 				rackets,
 				ball,
 				direction,
+				scores,
 				queue,
 				columns,
+				middle,
 				racketHeight
 			),
 			speed
