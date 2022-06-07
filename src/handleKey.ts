@@ -5,6 +5,44 @@ import type { Coordinates, PingPongTable, Rackets } from "./types";
 
 export const keys = ["w", "s", "up", "down"];
 
+const actions: Record<
+	string,
+	| ((
+			rackets: Rackets,
+			others: { racketHeight: number; lastRow: number }
+	  ) => boolean)
+	| undefined
+> = {
+	w: (rackets, { racketHeight }) => {
+		if (rackets[0][1] > racketHeight) {
+			rackets[0][1]--;
+			return true;
+		}
+		return false;
+	},
+	s: (rackets, { lastRow }) => {
+		if (rackets[0][1] < lastRow) {
+			rackets[0][1]++;
+			return true;
+		}
+		return false;
+	},
+	up: (rackets, { racketHeight }) => {
+		if (rackets[1][1] > racketHeight) {
+			rackets[1][1]--;
+			return true;
+		}
+		return false;
+	},
+	down: (rackets, { lastRow }) => {
+		if (rackets[1][1] < lastRow) {
+			rackets[1][1]++;
+			return true;
+		}
+		return false;
+	},
+};
+
 const handleKey = (
 	ball: Coordinates,
 	pingPongTable: PingPongTable,
@@ -14,9 +52,8 @@ const handleKey = (
 	rows: number
 ) => {
 	const render = toRender(ball, pingPongTable, queue, racketHeight, rackets);
-
-	const firstRow = rows - racketHeight - 1;
 	const lastRow = rows - racketHeight - 1;
+
 	return (
 		_: string | undefined,
 		key: {
@@ -30,37 +67,8 @@ const handleKey = (
 	) => {
 		if (key.ctrl && key.name === "c") exit(0);
 		if (!keys.includes(key.name)) return;
-		let modified = false;
-
-		switch (key.name) {
-			case "w":
-				if (rackets[0][1] > racketHeight) {
-					rackets[0][1]--;
-					modified = true;
-				}
-				break;
-			case "s":
-				if (rackets[0][1] < firstRow) {
-					rackets[0][1]++;
-					modified = true;
-				}
-				break;
-			case "up":
-				if (rackets[1][1] > racketHeight) {
-					rackets[1][1]--;
-					modified = true;
-				}
-				break;
-			case "down":
-				if (rackets[1][1] < lastRow) {
-					rackets[1][1]++;
-					modified = true;
-				}
-				break;
-			default:
-				break;
-		}
-		if (modified) void render();
+		if (actions[key.name]?.(rackets, { racketHeight, lastRow }) === true)
+			void render();
 	};
 };
 

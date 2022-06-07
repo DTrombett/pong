@@ -7,19 +7,19 @@ import Queue from "./Queue";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
-const rows = 50;
-const columns = 92;
+const columns = 92 as const;
+const racketHeight = 4 as const;
+const rows = 50 as const;
+const speed = 50 as const;
+const queue = new Queue();
+const ball: Coordinates = [Math.round(columns / 2), 1];
+const direction: Coordinates = [1, 1];
+const pingPongTable: PingPongTable = new Array(rows);
 const middle = Math.round(columns / 2);
-const racketHeight = 4;
 const rackets: Rackets = [
 	[Math.round(middle / 4), Math.round(rows / 2)],
 	[Math.round((middle * 7) / 4), Math.round(rows / 2)],
 ];
-const ball: Coordinates = [Math.round(columns / 2), 1];
-const speed = 50;
-const direction: Coordinates = [1, 1];
-const pingPongTable: PingPongTable = new Array(rows);
-const queue = new Queue();
 const render = toRender(ball, pingPongTable, queue, racketHeight, rackets);
 
 cursorTo(stdout, 0, 0, () => {
