@@ -44,15 +44,22 @@ const actions: Record<
 };
 
 const handleKey = (
-	ball: Coordinates,
 	pingPongTable: PingPongTable,
-	queue: Queue,
-	racketHeight: number,
 	rackets: Rackets,
-	rows: number
+	ball: Coordinates,
+	queue: Queue,
+	columns: number,
+	racketHeight: number
 ) => {
-	const render = toRender(ball, pingPongTable, queue, racketHeight, rackets);
-	const lastRow = rows - racketHeight - 1;
+	const render = toRender(
+		pingPongTable,
+		rackets,
+		ball,
+		queue,
+		columns,
+		racketHeight
+	);
+	const lastRow = pingPongTable.length - racketHeight - 1;
 
 	return (
 		_: string | undefined,

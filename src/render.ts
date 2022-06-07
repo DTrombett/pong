@@ -4,37 +4,44 @@ import type Queue from "./Queue";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
 
-const render =
-	(
-		ball: Coordinates,
-		pingPongTable: PingPongTable,
-		queue: Queue,
-		racketHeight: number,
-		rackets: Rackets
-	) =>
-	async (): Promise<void> => {
+const render = (
+	pingPongTable: PingPongTable,
+	rackets: Rackets,
+	ball: Coordinates,
+	queue: Queue,
+	columns: number,
+	racketHeight: number
+) => {
+	const last = columns - 1;
+	const middle = Math.round((last + 1) / 2);
+
+	return async (): Promise<void> => {
 		await queue.wait();
 		cursorTo(stdout, 0, 0, () => {
 			stdout.write(
 				pingPongTable
 					.map((row, line) =>
 						row
-							.map(
-								(code, i) =>
-									`\x1b[${
-										code ||
-										(rackets.some(
+							.map((color, i) => {
+								let code = color;
+
+								if (!code)
+									if (
+										rackets.some(
 											([x, y]) =>
 												i === x &&
 												line > y - racketHeight &&
 												line < y + racketHeight
 										)
-											? Colors.BgRed
-											: line === ball[1] && i === ball[0]
-											? Colors.BgYellow
-											: Colors.BgGreen)
-									}m  \x1b[m`
-							)
+									)
+										code = Colors.BgRed;
+									else if (line === ball[1] && i === ball[0])
+										code = Colors.BgYellow;
+									else if (i === 0 || i === middle || i === last)
+										code = Colors.BgWhite;
+									else code = Colors.BgGreen;
+								return `\x1b[${code}m  \x1b[m`;
+							})
 							.join("")
 					)
 					.join("\n"),
@@ -42,5 +49,6 @@ const render =
 			);
 		});
 	};
+};
 
 export default render;

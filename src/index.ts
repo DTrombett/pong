@@ -20,31 +20,37 @@ const rackets: Rackets = [
 	[Math.round(middle / 4), Math.round(rows / 2)],
 	[Math.round((middle * 7) / 4), Math.round(rows / 2)],
 ];
-const render = toRender(ball, pingPongTable, queue, racketHeight, rackets);
+const render = toRender(
+	pingPongTable,
+	rackets,
+	ball,
+	queue,
+	columns,
+	racketHeight
+);
 
 cursorTo(stdout, 0, 0, () => {
 	clearScreenDown(stdout);
 });
-buildTable(columns, middle, pingPongTable, rows);
+buildTable(pingPongTable, columns);
 emitKeypressEvents(stdin);
 stdin.setRawMode(true);
 stdout.write(`\x1b[?25l`);
 stdin.on(
 	"keypress",
-	handleKey(ball, pingPongTable, queue, racketHeight, rackets, rows)
+	handleKey(pingPongTable, rackets, ball, queue, columns, racketHeight)
 );
 setTimeout(
 	() =>
 		setInterval(
 			moveBall(
-				ball,
 				pingPongTable,
+				rackets,
+				ball,
+				direction,
 				queue,
 				columns,
-				direction,
-				racketHeight,
-				rackets,
-				rows
+				racketHeight
 			),
 			speed
 		),

@@ -3,16 +3,23 @@ import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
 const moveBall = (
-	ball: Coordinates,
 	pingPongTable: PingPongTable,
+	rackets: Rackets,
+	ball: Coordinates,
+	direction: Coordinates,
 	queue: Queue,
 	columns: number,
-	direction: Coordinates,
-	racketHeight: number,
-	rackets: Rackets,
-	rows: number
+	racketHeight: number
 ) => {
-	const render = toRender(ball, pingPongTable, queue, racketHeight, rackets);
+	const render = toRender(
+		pingPongTable,
+		rackets,
+		ball,
+		queue,
+		columns,
+		racketHeight
+	);
+	const rows = pingPongTable.length;
 	const lastColumn = columns - 2;
 	const lastRow = rows - 2;
 
