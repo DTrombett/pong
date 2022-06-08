@@ -1,5 +1,5 @@
 import { stdin, stdout } from "node:process";
-import { clearScreenDown, cursorTo, emitKeypressEvents } from "node:readline";
+import { clearScreenDown, cursorTo } from "node:readline";
 import buildTable from "./buildTable";
 import handleKey from "./handleKey";
 import moveBall from "./moveBall";
@@ -17,7 +17,7 @@ while (rows > stdout.rows) {
 	rows = Math.ceil(columns / 2);
 }
 const racketHeight = 4 as const;
-const speed = 50 as const;
+const speed = Math.round(5_000 / columns);
 const scores: Coordinates = [0, 0];
 const ball: Coordinates = [Math.round(columns / 2), 1];
 const direction: Coordinates = [1, 1];
@@ -33,11 +33,10 @@ cursorTo(stdout, 0, 0, () => {
 	clearScreenDown(stdout);
 });
 buildTable(pingPongTable, columns);
-emitKeypressEvents(stdin);
 stdin.setRawMode(true);
 stdout.write("\x1b[?25l");
 stdin.on(
-	"keypress",
+	"data",
 	handleKey(pingPongTable, rackets, ball, columns, racketHeight)
 );
 setTimeout(

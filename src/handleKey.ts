@@ -1,8 +1,9 @@
+import type { Buffer } from "node:buffer";
 import { exit, stdout } from "node:process";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
-export const keys = ["w", "s", "up", "down"];
+export const keys = ["w", "s", "\x1b[A", "\x1b[B"];
 
 const actions: Record<
 	string,
@@ -12,28 +13,28 @@ const actions: Record<
 	  ) => boolean)
 	| undefined
 > = {
-	w: (rackets, { racketHeight }) => {
+	[keys[0]]: (rackets, { racketHeight }) => {
 		if (rackets[0][1] > racketHeight) {
 			rackets[0][1]--;
 			return true;
 		}
 		return false;
 	},
-	s: (rackets, { lastRow }) => {
+	[keys[1]]: (rackets, { lastRow }) => {
 		if (rackets[0][1] < lastRow) {
 			rackets[0][1]++;
 			return true;
 		}
 		return false;
 	},
-	up: (rackets, { racketHeight }) => {
+	[keys[2]]: (rackets, { racketHeight }) => {
 		if (rackets[1][1] > racketHeight) {
 			rackets[1][1]--;
 			return true;
 		}
 		return false;
 	},
-	down: (rackets, { lastRow }) => {
+	[keys[3]]: (rackets, { lastRow }) => {
 		if (rackets[1][1] < lastRow) {
 			rackets[1][1]++;
 			return true;
@@ -52,23 +53,11 @@ const handleKey = (
 	const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 	const lastRow = pingPongTable.length - racketHeight - 1;
 
-	return (
-		_: string | undefined,
-		key: {
-			sequence: string;
-			name: string;
-			ctrl: boolean;
-			meta: boolean;
-			shift: boolean;
-			code?: string;
-		}
-	) => {
-		if (key.ctrl && key.name === "c") {
-			stdout.write("\x1b[?25h");
-			exit(0);
-		}
-		if (!keys.includes(key.name)) return;
-		if (actions[key.name]?.(rackets, { racketHeight, lastRow }) === true)
+	return (key: Buffer | string) => {
+		key = key.toString();
+		if (key === "\u0003") stdout.write("\x1b[?25h", (err) => exit(err ? 1 : 0));
+		if (!keys.includes(key)) return;
+		if (actions[key]?.(rackets, { racketHeight, lastRow }) === true)
 			void render();
 	};
 };
