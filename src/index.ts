@@ -16,6 +16,8 @@ while (rows > stdout.rows) {
 	columns -= 2;
 	rows = Math.ceil(columns / 2);
 }
+if (rows < 23 || columns < 41)
+	throw new Error("Your terminal is too small to play this game :(");
 const racketHeight = 4 as const;
 const speed = Math.round(5_000 / columns);
 const scores: Coordinates = [0, 0];
