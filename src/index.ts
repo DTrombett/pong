@@ -25,7 +25,7 @@ const pingPongTable: PingPongTable = new Array(rows);
 const middle = Math.round(columns / 2);
 const rackets: Rackets = [
 	[Math.round(middle / 4), Math.round(rows / 2)],
-	[Math.round((middle * 7) / 4), Math.round(rows / 2)],
+	[columns - Math.ceil(middle / 4), Math.round(rows / 2)],
 ];
 const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 
@@ -35,7 +35,7 @@ cursorTo(stdout, 0, 0, () => {
 buildTable(pingPongTable, columns);
 emitKeypressEvents(stdin);
 stdin.setRawMode(true);
-stdout.write(`\x1b[?25l`);
+stdout.write("\x1b[?25l");
 stdin.on(
 	"keypress",
 	handleKey(pingPongTable, rackets, ball, columns, racketHeight)

@@ -1,4 +1,4 @@
-import { exit } from "node:process";
+import { exit, stdout } from "node:process";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
@@ -49,13 +49,7 @@ const handleKey = (
 	columns: number,
 	racketHeight: number
 ) => {
-	const render = toRender(
-		pingPongTable,
-		rackets,
-		ball,
-		columns,
-		racketHeight
-	);
+	const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 	const lastRow = pingPongTable.length - racketHeight - 1;
 
 	return (
@@ -69,7 +63,10 @@ const handleKey = (
 			code?: string;
 		}
 	) => {
-		if (key.ctrl && key.name === "c") exit(0);
+		if (key.ctrl && key.name === "c") {
+			stdout.write("\x1b[?25h");
+			exit(0);
+		}
 		if (!keys.includes(key.name)) return;
 		if (actions[key.name]?.(rackets, { racketHeight, lastRow }) === true)
 			void render();
