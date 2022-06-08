@@ -1,3 +1,4 @@
+import { platform } from "node:os";
 import { stdin, stdout } from "node:process";
 import { clearScreenDown, cursorTo } from "node:readline";
 import buildTable from "./buildTable";
@@ -19,7 +20,7 @@ while (rows > stdout.rows) {
 if (rows < 23 || columns < 41)
 	throw new Error("Your terminal is too small to play this game :(");
 const racketHeight = 4 as const;
-const speed = Math.round(5_000 / columns);
+const speed = Math.round((platform() === "android" ? 3_000 : 5_000) / columns);
 const scores: Coordinates = [0, 0];
 const ball: Coordinates = [Math.round(columns / 2), 1];
 const direction: Coordinates = [1, 1];
