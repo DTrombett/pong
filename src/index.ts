@@ -6,6 +6,8 @@ import moveBall from "./moveBall";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
+if (stdout.getColorDepth() < 4)
+	throw new Error("Your terminal does not support required colors :(");
 let columns = Math.floor(
 	(stdout.columns % 2 === 1 ? stdout.columns : stdout.columns - 1) / 2
 );

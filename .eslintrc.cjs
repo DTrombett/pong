@@ -28,7 +28,6 @@ module.exports = {
 		"curly": ["warn", "multi"],
 		"dot-location": ["warn", "property"],
 		"eqeqeq": ["warn", "smart"],
-		"no-console": "warn",
 		"no-else-return": [
 			"warn",
 			{
