@@ -1,6 +1,5 @@
 import { stdout } from "node:process";
 import { cursorTo } from "node:readline";
-import type Queue from "./Queue";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
 
@@ -8,7 +7,6 @@ const render = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
 	ball: Coordinates,
-	queue: Queue,
 	columns: number,
 	racketHeight: number
 ) => {
@@ -16,7 +14,6 @@ const render = (
 	const middle = Math.round((last + 1) / 2);
 
 	return async (): Promise<void> => {
-		await queue.wait();
 		cursorTo(stdout, 0, 0, () => {
 			stdout.write(
 				pingPongTable
@@ -44,8 +41,7 @@ const render = (
 							})
 							.join("")
 					)
-					.join("\n"),
-				queue.next.bind(queue)
+					.join("\n")
 			);
 		});
 	};

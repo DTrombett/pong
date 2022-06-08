@@ -3,16 +3,16 @@ import { clearScreenDown, cursorTo, emitKeypressEvents } from "node:readline";
 import buildTable from "./buildTable";
 import handleKey from "./handleKey";
 import moveBall from "./moveBall";
-import Queue from "./Queue";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
-const columns = 92 as const;
+const columns = Math.floor(
+	(stdout.columns % 2 === 0 ? stdout.columns : stdout.columns - 1) / 2
+);
 const racketHeight = 4 as const;
-const rows = 50 as const;
+const rows = Math.floor(columns / 2);
 const speed = 50 as const;
 const scores: Coordinates = [0, 0];
-const queue = new Queue();
 const ball: Coordinates = [Math.round(columns / 2), 1];
 const direction: Coordinates = [1, 1];
 const pingPongTable: PingPongTable = new Array(rows);
@@ -21,14 +21,7 @@ const rackets: Rackets = [
 	[Math.round(middle / 4), Math.round(rows / 2)],
 	[Math.round((middle * 7) / 4), Math.round(rows / 2)],
 ];
-const render = toRender(
-	pingPongTable,
-	rackets,
-	ball,
-	queue,
-	columns,
-	racketHeight
-);
+const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 
 cursorTo(stdout, 0, 0, () => {
 	clearScreenDown(stdout);
@@ -39,7 +32,7 @@ stdin.setRawMode(true);
 stdout.write(`\x1b[?25l`);
 stdin.on(
 	"keypress",
-	handleKey(pingPongTable, rackets, ball, queue, columns, racketHeight)
+	handleKey(pingPongTable, rackets, ball, columns, racketHeight)
 );
 setTimeout(
 	() =>
@@ -50,7 +43,6 @@ setTimeout(
 				ball,
 				direction,
 				scores,
-				queue,
 				columns,
 				middle,
 				racketHeight

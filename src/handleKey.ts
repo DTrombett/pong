@@ -1,5 +1,4 @@
 import { exit } from "node:process";
-import type Queue from "./Queue";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
@@ -47,7 +46,6 @@ const handleKey = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
 	ball: Coordinates,
-	queue: Queue,
 	columns: number,
 	racketHeight: number
 ) => {
@@ -55,7 +53,6 @@ const handleKey = (
 		pingPongTable,
 		rackets,
 		ball,
-		queue,
 		columns,
 		racketHeight
 	);

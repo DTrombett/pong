@@ -1,7 +1,6 @@
 import { exit } from "node:process";
 import { setInterval } from "node:timers/promises";
 import { trophy, trophyColumns } from "./pixelArts";
-import type Queue from "./Queue";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
@@ -15,7 +14,6 @@ const moveBall = (
 	ball: Coordinates,
 	direction: Coordinates,
 	scores: Coordinates,
-	queue: Queue,
 	columns: number,
 	middle: number,
 	racketHeight: number
@@ -24,7 +22,6 @@ const moveBall = (
 		pingPongTable,
 		rackets,
 		ball,
-		queue,
 		columns,
 		racketHeight
 	);
