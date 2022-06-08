@@ -16,7 +16,7 @@ const render = (
 	return async (): Promise<void> => {
 		cursorTo(stdout, 0, 0, () => {
 			stdout.write(
-				pingPongTable
+				`${pingPongTable
 					.map((row, line) =>
 						row
 							.map((color, i) => {
@@ -41,7 +41,7 @@ const render = (
 							})
 							.join("")
 					)
-					.join("\n")
+					.join("\n")}\n`
 			);
 		});
 	};

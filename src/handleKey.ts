@@ -1,9 +1,16 @@
 import type { Buffer } from "node:buffer";
+import { platform } from "node:os";
 import { exit, stdout } from "node:process";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
-export const keys = ["w", "s", "\x1b[A", "\x1b[B"];
+const isAndroid = platform() === "android";
+export const keys = [
+	isAndroid ? "\u001b" : "w",
+	isAndroid ? "\t" : "s",
+	"\x1b[A",
+	"\x1b[B",
+];
 
 const actions: Record<
 	string,
