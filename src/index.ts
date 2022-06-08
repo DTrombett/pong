@@ -6,11 +6,15 @@ import moveBall from "./moveBall";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 
-const columns = Math.floor(
-	(stdout.columns % 2 === 0 ? stdout.columns : stdout.columns - 1) / 2
+let columns = Math.floor(
+	(stdout.columns % 2 === 1 ? stdout.columns : stdout.columns - 1) / 2
 );
+let rows = Math.ceil(columns / 2);
+while (rows > stdout.rows) {
+	columns -= 2;
+	rows = Math.ceil(columns / 2);
+}
 const racketHeight = 4 as const;
-const rows = Math.floor(columns / 2);
 const speed = 50 as const;
 const scores: Coordinates = [0, 0];
 const ball: Coordinates = [Math.round(columns / 2), 1];

@@ -18,16 +18,11 @@ const moveBall = (
 	middle: number,
 	racketHeight: number
 ) => {
-	const render = toRender(
-		pingPongTable,
-		rackets,
-		ball,
-		columns,
-		racketHeight
-	);
+	const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 	const rows = pingPongTable.length;
 	const lastColumn = columns - 2;
 	const lastRow = rows - 2;
+	const maxPoints = Math.floor((columns - 5) / 4);
 
 	return async () => {
 		if (scored) return;
@@ -39,7 +34,7 @@ const moveBall = (
 			pingPongTable[2][playerNumber * middle + ++scores[playerNumber] * 2] =
 				Colors.BgBlack;
 			scored = true;
-			if (scores[playerNumber] === 21) {
+			if (scores[playerNumber] === maxPoints) {
 				let i = 0,
 					j = 0;
 				const distance = Math.round(rows / 2) - Math.round(trophy.length / 2);
@@ -47,6 +42,7 @@ const moveBall = (
 					Math.round(middle / 2) - Math.round(trophy.length / 2);
 
 				rackets[0] = rackets[1] = [NaN, NaN];
+				ball[0] = ball[1] = NaN;
 				for await (const _ of setInterval(10)) {
 					pingPongTable[i + distance][j + halfMiddle + playerNumber * middle] =
 						trophy[i]?.[j] ?? 0;
