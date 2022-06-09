@@ -17,7 +17,7 @@ let columns = Math.floor(
 // The number of rows should be the half of the number of columns
 let rows = Math.ceil(columns / 2);
 // Be sure that the number of rows isn't more than the rows of the terminal
-while (rows > stdout.rows) {
+while (rows >= stdout.rows) {
 	columns -= 2;
 	rows = Math.ceil(columns / 2);
 }
