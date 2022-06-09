@@ -1,4 +1,4 @@
-import { exit } from "node:process";
+import { exit, stdout } from "node:process";
 import { setInterval } from "node:timers/promises";
 import { trophy, trophyColumns } from "./pixelArts";
 import toRender from "./render";
@@ -22,10 +22,11 @@ const moveBall = (
 	const rows = pingPongTable.length;
 	const lastColumn = columns - 2;
 	const lastRow = rows - 2;
-	const maxPoints = Math.floor((columns - 5) / 4);
+	let maxPoints = Math.floor((columns - 5) / 4);
 
+	if (maxPoints > 21) maxPoints = 21;
 	return async () => {
-		if (scored) return;
+		if (scored || stdout.rows < rows || stdout.columns * 2 < columns) return;
 		ball[0] += direction[0];
 		ball[1] += direction[1];
 		if (ball[0] === 1 || ball[0] === lastColumn) {
@@ -44,6 +45,11 @@ const moveBall = (
 				rackets[0] = rackets[1] = [NaN, NaN];
 				ball[0] = ball[1] = NaN;
 				for await (const _ of setInterval(10)) {
+					if (
+						stdout.rows < pingPongTable.length ||
+						stdout.columns * 2 < columns
+					)
+						continue;
 					pingPongTable[i + distance][j + halfMiddle + playerNumber * middle] =
 						trophy[i]?.[j] ?? 0;
 					do

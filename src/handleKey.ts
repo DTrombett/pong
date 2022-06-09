@@ -61,6 +61,8 @@ const handleKey = (
 	const lastRow = pingPongTable.length - racketHeight - 1;
 
 	return (key: Buffer | string) => {
+		if (stdout.rows < pingPongTable.length || stdout.columns * 2 < columns)
+			return;
 		key = key.toString();
 		if (key === "\u0003") stdout.write("\x1b[?25h", (err) => exit(err ? 1 : 0));
 		if (!keys.includes(key)) return;
