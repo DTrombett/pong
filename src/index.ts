@@ -30,13 +30,15 @@ const rackets: Rackets = [
 	[columns - Math.ceil(middle / 4), Math.round(rows / 2)],
 ];
 const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
+let oldPaused = false;
 
-(global as typeof globalThis & { paused: boolean }).paused = false;
+(global as typeof globalThis & { paused: boolean }).paused = oldPaused;
 declare let paused: boolean;
 stdout.write("\x1b[1;1H\x1b[?25l\x1b[0J");
 buildTable(pingPongTable, columns);
 stdout.on("resize", () => {
-	paused = stdout.rows < rows || stdout.columns * 2 < columns;
+	if (!paused || oldPaused)
+		paused = oldPaused = stdout.rows < rows || stdout.columns * 2 < columns;
 });
 stdin.setRawMode(true);
 stdin.on(
