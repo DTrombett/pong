@@ -85,9 +85,8 @@ const handleKey = (
 			paused = !paused;
 			return;
 		}
-		if (key === "\u0003" /* Ctrl+C */)
-			// Exit the program if the user presses Ctrl+C
-			exit(0);
+		// Exit the program if the user presses Ctrl+C
+		if (key === "\u0003" /* Ctrl+C */) exit(0);
 
 		// If the game is paused or the key is not a valid action, return
 		if (paused || !keys.includes(key)) return;
