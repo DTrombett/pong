@@ -6,11 +6,12 @@ import type { Coordinates, PingPongTable, Rackets } from "./types";
 
 declare let paused: boolean;
 const isAndroid = platform() === "android";
+// Keys for android are different because of the different keyboard layouts
 export const keys = [
-	isAndroid ? "\u001b" : "w",
-	isAndroid ? "\t" : "s",
-	"\x1b[A",
-	"\x1b[B",
+	isAndroid ? "\u001b" /* ESC */ : "w",
+	isAndroid ? "\t" /* TAB */ : "s",
+	"\x1b[A", // UP
+	"\x1b[B", // DOWN
 ];
 
 const actions: Record<
@@ -21,28 +22,32 @@ const actions: Record<
 	  ) => boolean)
 	| undefined
 > = {
-	[keys[0]]: (rackets, { racketHeight }) => {
+	[keys[0] /* UP */]: (rackets, { racketHeight }) => {
+		// Check if the racket is going to be moved out of the table
 		if (rackets[0][1] > racketHeight) {
 			rackets[0][1]--;
 			return true;
 		}
 		return false;
 	},
-	[keys[1]]: (rackets, { lastRow }) => {
+	[keys[1] /* DOWN */]: (rackets, { lastRow }) => {
+		// Check if the racket is going to be moved out of the table
 		if (rackets[0][1] < lastRow) {
 			rackets[0][1]++;
 			return true;
 		}
 		return false;
 	},
-	[keys[2]]: (rackets, { racketHeight }) => {
+	[keys[2] /* UP */]: (rackets, { racketHeight }) => {
+		// Check if the racket is going to be moved out of the table
 		if (rackets[1][1] > racketHeight) {
 			rackets[1][1]--;
 			return true;
 		}
 		return false;
 	},
-	[keys[3]]: (rackets, { lastRow }) => {
+	[keys[3] /* DOWN */]: (rackets, { lastRow }) => {
+		// Check if the racket is going to be moved out of the table
 		if (rackets[1][1] < lastRow) {
 			rackets[1][1]++;
 			return true;
@@ -51,6 +56,15 @@ const actions: Record<
 	},
 };
 
+/**
+ * Create a function to handle the keypresses.
+ * @param pingPongTable - The table to use
+ * @param rackets - The rackets to use
+ * @param ball - The ball to use
+ * @param columns - The number of columns in the table
+ * @param racketHeight - The height of the rackets
+ * @returns The function to handle input
+ */
 const handleKey = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
@@ -62,20 +76,25 @@ const handleKey = (
 	const lastRow = pingPongTable.length - racketHeight - 1;
 
 	return (key: Buffer | string) => {
+		// The key is usually a Buffer so we need to convert it to a string
 		key = key.toString();
 		if (
 			key === "/" &&
+			// Toggle the pause state only if terminal is big enough
 			stdout.rows >= pingPongTable.length &&
 			stdout.columns * 2 >= columns
 		) {
 			paused = !paused;
 			return;
 		}
-		if (key === "\u0003") {
+		if (key === "\u0003" /* Ctrl+C */) {
+			// Bring back the cursor and then exit
 			stdout.write("\x1b[?25h", (err) => exit(err ? 1 : 0));
 			return;
 		}
+		// If the game is paused or the key is not a valid action, return
 		if (paused || !keys.includes(key)) return;
+		// Get the correct action and render only if it returns true
 		if (actions[key]?.(rackets, { racketHeight, lastRow }) === true)
 			void render();
 	};

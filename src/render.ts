@@ -2,6 +2,15 @@ import { stdout } from "node:process";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
 
+/**
+ * Create a function to render the ping pong table.
+ * @param pingPongTable - The table to use
+ * @param rackets - The rackets to use
+ * @param ball - The ball to use
+ * @param columns - The number of columns in the table
+ * @param racketHeight - The height of the rackets
+ * @returns The function to render the table
+ */
 const render = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
@@ -13,6 +22,7 @@ const render = (
 	const middle = Math.round((last + 1) / 2);
 
 	return async (): Promise<void> => {
+		// Move the cursor to the top left corner
 		stdout.write(
 			`\x1b[1;1H${pingPongTable
 				.map((row, line) =>
@@ -20,6 +30,7 @@ const render = (
 						.map((color, i) => {
 							let code = color;
 
+							// If there's no color check if there's a racket, ball or if it's a border, otherwise it's part of the table and should be green
 							if (!code)
 								if (
 									rackets.some(

@@ -1,7 +1,14 @@
 /* eslint-disable no-sparse-arrays */
+import type { PixelArt } from "./types";
 import { Colors } from "./types";
 
-export const trophy = [
+/**
+ * Pixel arts are 2d arrays of colors.
+ * Every pixel art also exports the number of columns as it's not easy to retrieve it from the array.
+ */
+
+/** */
+export const trophy: PixelArt = [
 	[, , , ...new Array(11).fill(Colors.BgBlack)],
 	[
 		,

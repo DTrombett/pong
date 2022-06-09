@@ -29,3 +29,5 @@ export type Coordinates = [x: number, y: number];
 export type Rackets = [Coordinates, Coordinates];
 
 export type PingPongTable = Colors[][];
+
+export type PixelArt = Colors[][];
