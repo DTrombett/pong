@@ -32,12 +32,17 @@ const rackets: Rackets = [
 ];
 const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 
+(global as typeof globalThis & { paused: boolean }).paused = false;
+declare let paused: boolean;
 cursorTo(stdout, 0, 0, () => {
 	clearScreenDown(stdout);
 });
 buildTable(pingPongTable, columns);
-stdin.setRawMode(true);
 stdout.write("\x1b[?25l");
+stdout.on("resize", () => {
+	paused = stdout.rows < rows || stdout.columns * 2 < columns;
+});
+stdin.setRawMode(true);
 stdin.on(
 	"data",
 	handleKey(pingPongTable, rackets, ball, columns, racketHeight)
