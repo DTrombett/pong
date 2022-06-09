@@ -75,8 +75,8 @@ const moveBall = (
 		if (ball[1] === 1 || ball[1] === lastRow) direction[1] *= -1;
 		if (
 			rackets.some(
-				([x, y]) =>
-					ball[0] === x &&
+				([x, y], i) =>
+					ball[0] === x + (i ? -1 : 1) &&
 					ball[1] > y - racketHeight &&
 					ball[1] < y + racketHeight
 			)
