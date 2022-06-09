@@ -1,7 +1,5 @@
 import { exit } from "node:process";
-import { setInterval } from "node:timers/promises";
-import { trophy, trophyColumns } from "./pixelArts";
-import toRender from "./render";
+import { renderPixelArt, trophy, trophyColumns } from "./pixelArts";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
 
@@ -24,6 +22,7 @@ let lastDirection = true;
 const moveBall = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
+	render: () => Promise<void>,
 	ball: Coordinates,
 	direction: Coordinates,
 	scores: Coordinates,
@@ -31,7 +30,6 @@ const moveBall = (
 	middle: number,
 	racketHeight: number
 ) => {
-	const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 	const rows = pingPongTable.length;
 	const lastColumn = columns - 2;
 	const lastRow = rows - 2;
@@ -40,7 +38,7 @@ const moveBall = (
 
 	// The maximum points to win should be 21
 	if (winPoints > 21) winPoints = 21;
-	return async () => {
+	return () => {
 		// Don't move the ball if the game is paused or a player has just scored
 		if (scored || paused) return;
 		// Move the ball
@@ -56,39 +54,19 @@ const moveBall = (
 			scored = true;
 			// Check if the player has won
 			if (scores[playerNumber] === winPoints) {
-				let i = 0,
-					j = 0;
-				// Calculate the position of the trophy
-				const distance = Math.round(rows / 2) - Math.round(trophy.length / 2);
-				const halfMiddle =
-					Math.round(middle / 2) - Math.round(trophy.length / 2);
-
 				// Remove the rackets and the ball from the screen
 				rackets[0] = rackets[1] = [NaN, NaN];
 				ball[0] = ball[1] = NaN;
-				// Render a pixel of the trophy every 10ms
-				for await (const _ of setInterval(10)) {
-					// Check if the game is paused
-					if (paused as boolean) continue;
-					// Add the pixel to the table
-					pingPongTable[i + distance][j + halfMiddle + playerNumber * middle] =
-						trophy[i]?.[j] ?? 0;
-					// Find the next pixel
-					do
-						if (j === trophyColumns - 1) {
-							j = 0;
-							i++;
-						} else j++;
-					while (!trophy[i]?.[j] && i < trophy.length);
-					// Check if the trophy is finished
-					const isLast = i === trophy.length && j === 1;
-
-					// Render the table and then exit if the trophy is finished
-					void render().then(() => {
-						if (isLast) exit();
-					});
-					if (isLast) break;
-				}
+				void renderPixelArt(
+					pingPongTable,
+					render,
+					trophy,
+					trophyColumns,
+					Math.round(rows / 2) - Math.round(trophy.length / 2),
+					Math.round(middle / 2) -
+						Math.round(trophy.length / 2) +
+						playerNumber * middle
+				).then(() => exit());
 				return;
 			}
 			// Continue the game after 1 second
@@ -100,7 +78,7 @@ const moveBall = (
 			direction[0] = lastDirection ? 1 : -1;
 			direction[1] = 1;
 			// Move the ball back to the middle
-			ball[0] = Math.round(columns / 2);
+			ball[0] = middle;
 			ball[1] = 1;
 			// Render the table
 			void render();

@@ -19,7 +19,7 @@ const render = (
 	racketHeight: number
 ) => {
 	const last = columns - 1;
-	const middle = Math.round((last + 1) / 2);
+	const middle = Math.floor(columns / 2);
 
 	return async (): Promise<void> => {
 		// Move the cursor to the top left corner

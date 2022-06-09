@@ -1,5 +1,5 @@
 import { platform } from "node:os";
-import { stdin, stdout } from "node:process";
+import process, { stdin, stdout } from "node:process";
 import buildTable from "./buildTable";
 import handleKey from "./handleKey";
 import moveBall from "./moveBall";
@@ -24,6 +24,8 @@ while (rows > stdout.rows) {
 // Check if the table is too small
 if (rows < 23 || columns < 41)
 	throw new Error("Your terminal is too small to play this game :(");
+// Calculate the middle of the table
+const middle = Math.floor(columns / 2);
 // Calculate the height of the racket based on a ratio of a real racket to the terminal
 const racketHeight = Math.round((columns * 15) / 274);
 // Calculate the speed based on the table size
@@ -33,13 +35,11 @@ const speed = Math.round(
 );
 const scores: Coordinates = [0, 0];
 // The ball should be in the middle of the table and in the second row
-const ball: Coordinates = [Math.round(columns / 2), 1];
+const ball: Coordinates = [middle, 1];
 // The ball should be moving one pixel to the right and one pixel down
 const direction: Coordinates = [1, 1];
 // Create the table with the given number of rows
 const pingPongTable: PingPongTable = new Array(rows);
-// Calculate the middle of the table
-const middle = Math.floor(columns / 2);
 // both rackets should be in the middle of the table
 const rackets: Rackets = [
 	// The first racket should be at 1/4 from the left to the middle
@@ -54,10 +54,10 @@ let oldPaused = false;
 // Create a global paused variable to be able to pause the game
 (global as typeof globalThis & { paused: boolean }).paused = oldPaused;
 declare let paused: boolean;
-// Hide the cursor, move it to the start of the terminal and clear the screen
-stdout.write("\x1b[?25l\x1b[1;1H\x1b[0J");
 // Build the table
 buildTable(pingPongTable, columns);
+// Hide the cursor, move it to the start of the terminal and clear the screen
+stdout.write("\x1b[?25l\x1b[1;1H\x1b[0J");
 // When the terminal is resized, check if the table can still fit
 stdout.on("resize", () => {
 	// Change the paused variable only if the game is not already paused or it was paused before
@@ -69,7 +69,7 @@ stdin.setRawMode(true);
 // When a key is pressed, handle it
 stdin.on(
 	"data",
-	handleKey(pingPongTable, rackets, ball, columns, racketHeight)
+	handleKey(pingPongTable, rackets, render, columns, racketHeight)
 );
 // Wait a second before starting moving the ball
 setTimeout(
@@ -79,6 +79,7 @@ setTimeout(
 			moveBall(
 				pingPongTable,
 				rackets,
+				render,
 				ball,
 				direction,
 				scores,
@@ -90,6 +91,10 @@ setTimeout(
 		),
 	1000
 );
+process.on("exit", () => {
+	// When the process is exiting, show the cursor
+	stdout.write("\x1b[?25h");
+});
 
 // Render the table
 await render();

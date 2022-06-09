@@ -1,8 +1,7 @@
 import type { Buffer } from "node:buffer";
 import { platform } from "node:os";
 import { exit, stdout } from "node:process";
-import toRender from "./render";
-import type { Coordinates, PingPongTable, Rackets } from "./types";
+import type { PingPongTable, Rackets } from "./types";
 
 declare let paused: boolean;
 const isAndroid = platform() === "android";
@@ -60,7 +59,7 @@ const actions: Record<
  * Create a function to handle the keypresses.
  * @param pingPongTable - The table to use
  * @param rackets - The rackets to use
- * @param ball - The ball to use
+ * @param render - The function to render the table
  * @param columns - The number of columns in the table
  * @param racketHeight - The height of the rackets
  * @returns The function to handle input
@@ -68,11 +67,10 @@ const actions: Record<
 const handleKey = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
-	ball: Coordinates,
+	render: () => Promise<void>,
 	columns: number,
 	racketHeight: number
 ) => {
-	const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
 	const lastRow = pingPongTable.length - racketHeight - 1;
 
 	return (key: Buffer | string) => {
@@ -87,11 +85,10 @@ const handleKey = (
 			paused = !paused;
 			return;
 		}
-		if (key === "\u0003" /* Ctrl+C */) {
-			// Bring back the cursor and then exit
-			stdout.write("\x1b[?25h", (err) => exit(err ? 1 : 0));
-			return;
-		}
+		if (key === "\u0003" /* Ctrl+C */)
+			// Exit the program if the user presses Ctrl+C
+			exit(0);
+
 		// If the game is paused or the key is not a valid action, return
 		if (paused || !keys.includes(key)) return;
 		// Get the correct action and render only if it returns true
