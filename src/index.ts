@@ -5,6 +5,7 @@ import handleKey from "./handleKey";
 import moveBall from "./moveBall";
 import toRender from "./render";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
+import { Colors } from "./types";
 
 // Check if the terminal supports colors
 if (stdout.getColorDepth() < 4)
@@ -49,7 +50,8 @@ const rackets: Rackets = [
 ];
 // Create the rendering function
 const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
-let oldPaused = false;
+let oldPaused = false,
+	time = 0;
 
 // Create a global paused variable to be able to pause the game
 (global as typeof globalThis & { paused: boolean }).paused = oldPaused;
@@ -71,6 +73,10 @@ stdin.on(
 	"data",
 	handleKey(pingPongTable, rackets, render, columns, racketHeight)
 );
+process.on("exit", () => {
+	// When the process is exiting, show the cursor and move it to the end of the terminal
+	stdout.write(`\x1b[?25h\x1b[1;${rows + 2}H`);
+});
 // Wait a second before starting moving the ball
 setTimeout(
 	() =>
@@ -91,10 +97,18 @@ setTimeout(
 		),
 	1000
 );
-process.on("exit", () => {
-	// When the process is exiting, show the cursor
-	stdout.write("\x1b[?25h");
-});
+setInterval(() => {
+	if (paused) return;
+	const seconds = time % 60;
+
+	// Write the time that has passed
+	stdout.write(
+		`\x1b[${Colors.FgGreen}m${Math.floor(time / 60)}:${
+			seconds > 9 ? "" : "0"
+		}${seconds}\x1b[m`
+	);
+	time++;
+}, 1000);
 
 // Render the table
 await render();
