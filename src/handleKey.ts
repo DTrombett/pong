@@ -83,7 +83,7 @@ const handleKey = (
 		// The key is usually a Buffer so we need to convert it to a string
 		key = key.toString();
 		if (
-			key === "/" &&
+			(key === "/" || key === " ") &&
 			// Toggle the pause state only if terminal is big enough
 			stdout.rows >= pingPongTable.length &&
 			stdout.columns * 2 >= columns
