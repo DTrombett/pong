@@ -71,12 +71,11 @@ const handleKey = (
 			paused = !paused;
 			return;
 		}
-		if (paused) return;
 		if (key === "\u0003") {
 			stdout.write("\x1b[?25h", (err) => exit(err ? 1 : 0));
 			return;
 		}
-		if (!keys.includes(key)) return;
+		if (paused || !keys.includes(key)) return;
 		if (actions[key]?.(rackets, { racketHeight, lastRow }) === true)
 			void render();
 	};

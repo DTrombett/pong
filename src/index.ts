@@ -19,7 +19,7 @@ while (rows > stdout.rows) {
 }
 if (rows < 23 || columns < 41)
 	throw new Error("Your terminal is too small to play this game :(");
-const racketHeight = 4 as const;
+const racketHeight = Math.round((columns * 15) / 274);
 const speed = Math.round((platform() === "android" ? 7_000 : 5_000) / columns);
 const scores: Coordinates = [0, 0];
 const ball: Coordinates = [Math.round(columns / 2), 1];
