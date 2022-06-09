@@ -1,6 +1,8 @@
+import { Client } from "discord-rpc";
 import { platform } from "node:os";
 import process, { stdin, stdout } from "node:process";
 import buildTable from "./buildTable";
+import { rpcActivity } from "./Constants";
 import handleKey from "./handleKey";
 import moveBall from "./moveBall";
 import toRender from "./render";
@@ -50,6 +52,11 @@ const rackets: Rackets = [
 ];
 // Create the rendering function
 const render = toRender(pingPongTable, rackets, ball, columns, racketHeight);
+// Create a client for the Discord Rich Presence
+const client = new Client({ transport: "ipc" }).on("ready", () => {
+	// Set the activity
+	client.setActivity(rpcActivity).catch(() => client.destroy());
+});
 let oldPaused = false,
 	time = 0;
 
@@ -71,11 +78,19 @@ stdin.setRawMode(true);
 // When a key is pressed, handle it
 stdin.on(
 	"data",
-	handleKey(pingPongTable, rackets, render, columns, racketHeight)
+	handleKey(
+		pingPongTable,
+		rackets,
+		scores,
+		render,
+		client,
+		columns,
+		racketHeight
+	)
 );
 process.on("exit", () => {
 	// When the process is exiting, show the cursor and move it to the end of the terminal
-	stdout.write(`\x1b[?25h\x1b[1;${rows + 2}H`);
+	stdout.write(`\x1b[?25h\x1b[${columns};${rows + 2}H`);
 });
 // Wait a second before starting moving the ball
 setTimeout(
@@ -89,6 +104,7 @@ setTimeout(
 				ball,
 				direction,
 				scores,
+				client,
 				columns,
 				middle,
 				racketHeight
@@ -109,6 +125,9 @@ setInterval(() => {
 	);
 	time++;
 }, 1000);
+client.login({ clientId: "984474863316140042" }).catch(() => {
+	// Ignore errors
+});
 
 // Render the table
 await render();

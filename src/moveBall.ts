@@ -1,4 +1,6 @@
+import type { Client } from "discord-rpc";
 import { exit } from "node:process";
+import { rpcActivity } from "./Constants";
 import { renderPixelArt, trophy, trophyColumns } from "./pixelArts";
 import type { Coordinates, PingPongTable, Rackets } from "./types";
 import { Colors } from "./types";
@@ -11,9 +13,11 @@ let lastDirection = true;
  * Create a function to move the ball.
  * @param pingPongTable - The table to use
  * @param rackets - The rackets to use
+ * @param render - The function to render the table
  * @param ball - The ball to use
  * @param direction - The direction array to use
  * @param scores - The scores array to use
+ * @param client - The client for the Discord Rich Presence
  * @param columns - The number of columns in the table
  * @param middle - The middle of the table
  * @param racketHeight - The height of the rackets
@@ -26,6 +30,7 @@ const moveBall = (
 	ball: Coordinates,
 	direction: Coordinates,
 	scores: Coordinates,
+	client: Client,
 	columns: number,
 	middle: number,
 	racketHeight: number
@@ -82,6 +87,14 @@ const moveBall = (
 			ball[1] = 1;
 			// Render the table
 			void render();
+			client
+				.setActivity({
+					...rpcActivity,
+					details: `In a ping pong game (${scores[0]} - ${scores[1]})`,
+				})
+				.catch(() => {
+					// Ignore errors
+				});
 			return;
 		}
 		// Check if the ball has hit the top or bottom of the table

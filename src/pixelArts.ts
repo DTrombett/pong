@@ -13,10 +13,11 @@ declare let paused: boolean;
 /**
  * Create a function to render a pixel art.
  * @param pingPongTable - The table to use
- * @param rackets - The rackets to use
- * @param ball - The ball to use
- * @param columns - The number of columns in the table
- * @param racketHeight - The height of the rackets
+ * @param render - The function to render the table
+ * @param art - The pixel art to render
+ * @param artColumns - The number of columns in the art
+ * @param xOffset - The x offset to use
+ * @param yOffset - The y offset to use
  * @returns The function to render a pixel art
  */
 export const renderPixelArt = (

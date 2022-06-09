@@ -1,7 +1,9 @@
+import type { Client } from "discord-rpc";
 import type { Buffer } from "node:buffer";
 import { platform } from "node:os";
 import { exit, stdout } from "node:process";
-import type { PingPongTable, Rackets } from "./types";
+import { rpcActivity } from "./Constants";
+import type { Coordinates, PingPongTable, Rackets } from "./types";
 
 declare let paused: boolean;
 const isAndroid = platform() === "android";
@@ -59,7 +61,9 @@ const actions: Record<
  * Create a function to handle the keypresses.
  * @param pingPongTable - The table to use
  * @param rackets - The rackets to use
+ * @param scores - The scores to use
  * @param render - The function to render the table
+ * @param client - The client for the Discord Rich Presence
  * @param columns - The number of columns in the table
  * @param racketHeight - The height of the rackets
  * @returns The function to handle input
@@ -67,7 +71,9 @@ const actions: Record<
 const handleKey = (
 	pingPongTable: PingPongTable,
 	rackets: Rackets,
+	scores: Coordinates,
 	render: () => Promise<void>,
+	client: Client,
 	columns: number,
 	racketHeight: number
 ) => {
@@ -83,11 +89,20 @@ const handleKey = (
 			stdout.columns * 2 >= columns
 		) {
 			paused = !paused;
+			client
+				.setActivity({
+					...rpcActivity,
+					details: `In a ping pong game (${scores[0]} - ${scores[1]})`,
+					smallImageKey: paused ? "paused" : "play",
+					smallImageText: paused ? "Paused" : "Playing",
+				})
+				.catch(() => {
+					// Ignore errors
+				});
 			return;
 		}
 		// Exit the program if the user presses Ctrl+C
 		if (key === "\u0003" /* Ctrl+C */) exit(0);
-
 		// If the game is paused or the key is not a valid action, return
 		if (paused || !keys.includes(key)) return;
 		// Get the correct action and render only if it returns true
