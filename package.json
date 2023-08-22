@@ -17,7 +17,7 @@
 	},
 	"author": "DTrombett",
 	"devDependencies": {
-		"@tsconfig/node18": "^2.0.1",
+		"@tsconfig/node18": "^18.2.1",
 		"@types/discord-rpc": "^4.0.4",
 		"@types/node": "^20.3.0",
 		"@typescript-eslint/eslint-plugin": "^5.59.11",
